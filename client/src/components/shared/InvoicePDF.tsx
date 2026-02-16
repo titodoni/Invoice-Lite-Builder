@@ -229,9 +229,9 @@ const InvoicePDF = forwardRef<HTMLDivElement, InvoicePDFProps>(({
                 <tr key={index}>
                   <td className="py-4 px-4 font-medium">{item.name}</td>
                   <td className="py-4 px-4 text-center">{item.quantity}</td>
-                  <td className="py-4 px-4 text-right">{currencyFormatter.format(item.price)}</td>
+                  <td className="py-4 px-4 text-right">{formatCurrency(item.price, currency)}</td>
                   <td className="py-4 px-4 text-right font-bold text-slate-800">
-                    {currencyFormatter.format(item.price * item.quantity)}
+                    {formatCurrency(item.price * item.quantity, currency)}
                   </td>
                 </tr>
               ))}
@@ -325,8 +325,8 @@ const InvoicePDF = forwardRef<HTMLDivElement, InvoicePDFProps>(({
             <tr key={i} className="border-b border-gray-200">
               <td className="py-3">{item.name}</td>
               <td className="py-3 text-center">{item.quantity}</td>
-              <td className="py-3 text-right">{currencyFormatter.format(item.price)}</td>
-              <td className="py-3 text-right font-bold">{currencyFormatter.format(item.price * item.quantity)}</td>
+              <td className="py-3 text-right">{formatCurrency(item.price, currency)}</td>
+              <td className="py-3 text-right font-bold">{formatCurrency(item.price * item.quantity, currency)}</td>
             </tr>
           ))}
         </tbody>
