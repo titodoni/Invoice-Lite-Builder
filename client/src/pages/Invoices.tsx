@@ -31,6 +31,7 @@ import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import { format } from "date-fns";
 import { Invoice } from "@shared/schema";
+import { formatCurrency } from "@/lib/utils";
 
 export default function Invoices() {
   const { invoices, deleteInvoice, updateInvoice } = useInvoices();
@@ -112,7 +113,7 @@ export default function Invoices() {
                     <TableCell>{format(new Date(invoice.date), 'MMM dd, yyyy')}</TableCell>
                     <TableCell>{format(new Date(invoice.dueDate), 'MMM dd, yyyy')}</TableCell>
                     <TableCell className="text-right font-bold">
-                       {new Intl.NumberFormat('en-US', { style: 'currency', currency: invoice.currency }).format(invoice.grandTotal)}
+                       {formatCurrency(invoice.grandTotal, invoice.currency)}
                     </TableCell>
                     <TableCell className="text-center">
                       <Badge variant="outline" className={getStatusColor(invoice.status)}>

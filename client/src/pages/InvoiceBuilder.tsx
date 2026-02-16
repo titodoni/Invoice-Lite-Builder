@@ -20,8 +20,9 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarIcon, Trash2, Plus, Save, ArrowLeft, Download, Printer } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { CalendarIcon, Trash2, Plus, Save, ArrowLeft, Download, Printer, Settings2 } from "lucide-react";
+import { cn, formatCurrency } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import InvoicePDF from "@/components/shared/InvoicePDF";
 
@@ -56,6 +57,8 @@ export default function InvoiceBuilder() {
       taxTotal: 0,
       discountType: "fixed",
       discountValue: 0,
+      taxType: "exclude",
+      discountCalculation: "before_tax",
       grandTotal: 0,
       status: "draft",
       currency: profile.currency,
@@ -71,25 +74,45 @@ export default function InvoiceBuilder() {
   const watchedItems = form.watch("items");
   const discountType = form.watch("discountType");
   const discountValue = form.watch("discountValue");
+  const taxType = form.watch("taxType");
+  const discountCalculation = form.watch("discountCalculation");
 
   useEffect(() => {
     const subtotal = watchedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     
-    let discount = 0;
+    let baseForTax = subtotal;
+    let discountAmount = 0;
+
+    // 1. Calculate Discount
     if (discountType === "fixed") {
-      discount = discountValue;
+      discountAmount = discountValue;
     } else {
-      discount = subtotal * (discountValue / 100);
+      discountAmount = subtotal * (discountValue / 100);
     }
 
-    const tax = (subtotal - discount) * (profile.defaultVat / 100);
-    const grandTotal = subtotal - discount + tax;
+    // 2. Calculate Tax
+    let taxAmount = 0;
+    const taxRate = profile.defaultVat / 100;
 
-    // Use setValue with shouldValidate: false to prevent infinite loop if validation runs
+    if (taxType === "include") {
+      // If tax is included, it's already in the subtotal
+      taxAmount = subtotal - (subtotal / (1 + taxRate));
+    } else {
+      // If tax is excluded, calculate it based on subtotal (adjusted for discount if before_tax)
+      const calculationBase = discountCalculation === "before_tax" 
+        ? (subtotal - discountAmount) 
+        : subtotal;
+      taxAmount = Math.max(0, calculationBase * taxRate);
+    }
+
+    const grandTotal = taxType === "include" 
+      ? (subtotal - discountAmount)
+      : (subtotal - discountAmount + taxAmount);
+
     form.setValue("subtotal", subtotal);
-    form.setValue("taxTotal", tax);
+    form.setValue("taxTotal", taxAmount);
     form.setValue("grandTotal", grandTotal);
-  }, [JSON.stringify(watchedItems), discountType, discountValue, profile.defaultVat, form.setValue]);
+  }, [JSON.stringify(watchedItems), discountType, discountValue, taxType, discountCalculation, profile.defaultVat, form.setValue]);
 
   const onSubmit = (data: Invoice) => {
     if (isEditMode) {
@@ -296,7 +319,7 @@ export default function InvoiceBuilder() {
                      </div>
                      <div className="col-span-4 md:col-span-2 flex flex-col items-end justify-between h-full pt-6">
                         <div className="font-bold text-sm mb-2">
-                           {(form.watch(`items.${index}.quantity`) * form.watch(`items.${index}.price`)).toFixed(2)}
+                           {formatCurrency(form.watch(`items.${index}.quantity`) * form.watch(`items.${index}.price`), form.watch("currency"))}
                         </div>
                         <Button 
                           variant="ghost" 
@@ -366,7 +389,7 @@ export default function InvoiceBuilder() {
               <div className="space-y-2 text-sm text-slate-400">
                  <div className="flex justify-between">
                     <span>Subtotal</span>
-                    <span>{form.watch("subtotal").toFixed(2)}</span>
+                    <span>{formatCurrency(form.watch("subtotal"), form.watch("currency"))}</span>
                  </div>
                  <div className="flex justify-between items-center">
                     <span>Discount</span>
@@ -390,9 +413,42 @@ export default function InvoiceBuilder() {
                        </Select>
                     </div>
                  </div>
-                 <div className="flex justify-between">
+                 
+                 <div className="pt-2 space-y-2 border-t border-slate-800 mt-2">
+                    <div className="flex items-center justify-between">
+                       <Label className="text-[10px] uppercase text-slate-500">Tax Mode</Label>
+                       <Tabs 
+                         value={form.watch("taxType")} 
+                         onValueChange={(v: any) => form.setValue("taxType", v)}
+                         className="h-6"
+                       >
+                          <TabsList className="h-6 bg-slate-800 p-0.5">
+                             <TabsTrigger value="exclude" className="text-[10px] h-5 px-2">Exclude</TabsTrigger>
+                             <TabsTrigger value="include" className="text-[10px] h-5 px-2">Include</TabsTrigger>
+                          </TabsList>
+                       </Tabs>
+                    </div>
+                    
+                    {form.watch("taxType") === "exclude" && (
+                       <div className="flex items-center justify-between">
+                          <Label className="text-[10px] uppercase text-slate-500">Discount Calc</Label>
+                          <Tabs 
+                            value={form.watch("discountCalculation")} 
+                            onValueChange={(v: any) => form.setValue("discountCalculation", v)}
+                            className="h-6"
+                          >
+                             <TabsList className="h-6 bg-slate-800 p-0.5">
+                                <TabsTrigger value="before_tax" className="text-[10px] h-5 px-2">Before Tax</TabsTrigger>
+                                <TabsTrigger value="after_tax" className="text-[10px] h-5 px-2">After Tax</TabsTrigger>
+                             </TabsList>
+                          </Tabs>
+                       </div>
+                    )}
+                 </div>
+
+                 <div className="flex justify-between pt-2">
                     <span>Tax ({profile.defaultVat}%)</span>
-                    <span>{form.watch("taxTotal").toFixed(2)}</span>
+                    <span>{formatCurrency(form.watch("taxTotal"), form.watch("currency"))}</span>
                  </div>
               </div>
               
@@ -400,7 +456,7 @@ export default function InvoiceBuilder() {
               
               <div className="flex justify-between items-center">
                  <span className="font-bold text-lg">Total</span>
-                 <span className="font-bold text-2xl">{form.watch("grandTotal").toFixed(2)}</span>
+                 <span className="font-bold text-2xl">{formatCurrency(form.watch("grandTotal"), form.watch("currency"))}</span>
               </div>
               
               <div className="pt-4">

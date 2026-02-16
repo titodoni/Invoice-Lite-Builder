@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { itemSchema, type Item } from "@shared/schema";
+import { formatCurrency } from "@/lib/utils";
 import { 
   Plus, 
   Search, 
@@ -157,7 +158,7 @@ export default function Items() {
                         </div>
                      </TableCell>
                      <TableCell className="text-muted-foreground">{item.unit}</TableCell>
-                     <TableCell className="text-right font-medium">${item.price.toFixed(2)}</TableCell>
+                     <TableCell className="text-right font-medium">{formatCurrency(item.price)}</TableCell>
                      <TableCell>
                         <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(item)}>

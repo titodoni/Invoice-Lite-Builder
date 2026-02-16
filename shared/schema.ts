@@ -62,6 +62,8 @@ export const invoiceSchema = z.object({
   taxTotal: z.number(),
   discountType: z.enum(["percentage", "fixed"]).default("fixed"),
   discountValue: z.number().default(0),
+  taxType: z.enum(["exclude", "include"]).default("exclude"),
+  discountCalculation: z.enum(["before_tax", "after_tax"]).default("before_tax"),
   grandTotal: z.number(),
   status: z.enum(["draft", "paid", "unpaid"]).default("draft"),
   currency: z.enum(["IDR", "USD", "EUR", "SGD", "MYR"]).default("USD"),

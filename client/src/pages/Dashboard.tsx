@@ -29,6 +29,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { formatCurrency } from "@/lib/utils";
 
 export default function Dashboard() {
   const { invoices } = useInvoices();
@@ -76,7 +77,7 @@ export default function Dashboard() {
             <DollarSign className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalRevenue.toLocaleString()}</div>
+            <div className="text-2xl font-bold">{formatCurrency(totalRevenue)}</div>
             <p className="text-xs text-muted-foreground flex items-center mt-1">
               <CheckCircle2 className="w-3 h-3 mr-1 text-emerald-500" />
               Paid invoices
@@ -90,7 +91,7 @@ export default function Dashboard() {
             <Clock className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${pendingAmount.toLocaleString()}</div>
+            <div className="text-2xl font-bold">{formatCurrency(pendingAmount)}</div>
             <p className="text-xs text-muted-foreground flex items-center mt-1">
               <AlertCircle className="w-3 h-3 mr-1 text-amber-500" />
               Unpaid & Drafts
@@ -181,7 +182,7 @@ export default function Dashboard() {
                          </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-bold">${inv.grandTotal.toLocaleString()}</p>
+                        <p className="text-sm font-bold">{formatCurrency(inv.grandTotal, inv.currency)}</p>
                         <Badge 
                           variant="outline" 
                           className={
