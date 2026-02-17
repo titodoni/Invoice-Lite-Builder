@@ -121,6 +121,10 @@ export default function Clients() {
                  <Label>Alamat</Label>
                  <Input {...form.register("address")} placeholder="Jl. Sudirman No. 123, Jakarta" />
                </div>
+               <div className="space-y-2">
+                 <Label>ID Pajak / NPWP</Label>
+                 <Input {...form.register("taxId")} placeholder="00.000.000.0-000.000" />
+               </div>
                <DialogFooter>
                  <Button type="submit">Simpan Klien</Button>
                </DialogFooter>

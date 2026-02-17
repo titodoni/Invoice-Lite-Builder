@@ -248,8 +248,9 @@ export default function InvoiceBuilder() {
                     <PopoverContent className="w-auto p-0">
                       <Calendar 
                         mode="single" 
-                        selected={new Date(form.watch("date"))}
+                        selected={form.watch("date") ? new Date(form.watch("date")) : undefined}
                         onSelect={(date) => date && form.setValue("date", date.toISOString())}
+                        initialFocus
                       />
                     </PopoverContent>
                  </Popover>
@@ -266,8 +267,9 @@ export default function InvoiceBuilder() {
                     <PopoverContent className="w-auto p-0">
                       <Calendar 
                         mode="single" 
-                        selected={new Date(form.watch("dueDate"))}
+                        selected={form.watch("dueDate") ? new Date(form.watch("dueDate")) : undefined}
                         onSelect={(date) => date && form.setValue("dueDate", date.toISOString())}
+                        initialFocus
                       />
                     </PopoverContent>
                  </Popover>
