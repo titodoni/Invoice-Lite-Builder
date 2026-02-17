@@ -111,11 +111,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="mt-auto pt-6 border-t">
-            <div className="bg-muted/50 rounded-xl p-4">
-              <h4 className="font-medium text-sm mb-1">Butuh bantuan?</h4>
-              <p className="text-xs text-muted-foreground mb-3">Lihat dokumentasi kami.</p>
-              <Button size="sm" variant="outline" className="w-full text-xs h-8">Lihat Dokumen</Button>
-            </div>
+            {/* Help button removed */}
           </div>
         </div>
       </aside>

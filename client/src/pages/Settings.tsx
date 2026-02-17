@@ -5,13 +5,16 @@ import { companyProfileSchema, type CompanyProfile } from "@shared/schema";
 import { 
   Building, 
   Save, 
-  Upload
+  Upload,
+  Percent,
+  Receipt
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useRef, useState } from "react";
 
@@ -112,6 +115,46 @@ export default function Settings() {
 
         <Card>
           <CardHeader>
+            <CardTitle>Fitur & Pajak</CardTitle>
+            <CardDescription>Aktifkan atau nonaktifkan fitur tambahan.</CardDescription>
+          </CardHeader>
+          <Separator />
+          <CardContent className="p-6 space-y-6">
+             <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                   <Label className="text-base">Pajak (PPN)</Label>
+                   <p className="text-sm text-muted-foreground">Aktifkan perhitungan pajak pada tagihan.</p>
+                </div>
+                <Switch 
+                  checked={form.watch("taxEnabled")} 
+                  onCheckedChange={(val) => form.setValue("taxEnabled", val)} 
+                />
+             </div>
+             
+             {form.watch("taxEnabled") && (
+                <div className="space-y-2 pt-2">
+                   <Label>PPN Default (%)</Label>
+                   <Input type="number" min="0" step="0.1" {...form.register("defaultVat", { valueAsNumber: true })} />
+                </div>
+             )}
+
+             <Separator />
+
+             <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                   <Label className="text-base">Diskon</Label>
+                   <p className="text-sm text-muted-foreground">Aktifkan fitur diskon pada tagihan.</p>
+                </div>
+                <Switch 
+                  checked={form.watch("discountEnabled")} 
+                  onCheckedChange={(val) => form.setValue("discountEnabled", val)} 
+                />
+             </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
             <CardTitle>Pengaturan Keuangan</CardTitle>
             <CardDescription>Pengaturan awal untuk tagihan baru.</CardDescription>
           </CardHeader>
@@ -124,10 +167,6 @@ export default function Settings() {
              <div className="space-y-2">
                 <Label>Nomor Rekening</Label>
                 <Input {...form.register("bankAccount")} />
-             </div>
-             <div className="space-y-2">
-                <Label>PPN Default (%)</Label>
-                <Input type="number" min="0" step="0.1" {...form.register("defaultVat", { valueAsNumber: true })} />
              </div>
              <div className="space-y-2">
                 <Label>Kode Mata Uang</Label>

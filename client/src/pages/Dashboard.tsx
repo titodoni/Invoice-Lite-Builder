@@ -172,16 +172,16 @@ export default function Dashboard() {
                   const client = clients.find(c => c.id === inv.clientId);
                   return (
                     <div key={inv.id} className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                         <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                      <div className="flex items-center space-x-4 min-w-0 flex-1">
+                         <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
                             <FileText className="w-5 h-5 text-muted-foreground" />
                          </div>
-                         <div>
-                           <p className="text-sm font-medium leading-none">{client?.name || 'Klien Tidak Dikenal'}</p>
-                           <p className="text-xs text-muted-foreground mt-1">{inv.invoiceNumber}</p>
+                         <div className="min-w-0 flex-1">
+                           <p className="text-sm font-medium leading-none truncate">{client?.name || 'Klien Tidak Dikenal'}</p>
+                           <p className="text-xs text-muted-foreground mt-1 truncate">{inv.invoiceNumber}</p>
                          </div>
                       </div>
-                      <div className="text-right">
+                      <div className="text-right ml-4">
                         <p className="text-sm font-bold">{formatCurrency(inv.grandTotal, inv.currency)}</p>
                         <Badge 
                           variant="outline" 

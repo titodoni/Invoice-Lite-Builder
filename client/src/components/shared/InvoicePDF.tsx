@@ -114,7 +114,7 @@ const InvoicePDF = forwardRef<HTMLDivElement, InvoicePDFProps>(({
                 <span>{formatCurrency(invoice.subtotal, currency)}</span>
               </div>
               
-              {invoice.discountValue > 0 && (
+              {company.discountEnabled && invoice.discountValue > 0 && (
                 <div className="flex justify-between text-green-600 text-sm">
                   <span>Discount {invoice.discountType === 'percentage' ? `(${invoice.discountValue}%)` : ''}</span>
                   <span>-{formatCurrency(invoice.discountType === 'percentage' 
@@ -123,7 +123,7 @@ const InvoicePDF = forwardRef<HTMLDivElement, InvoicePDFProps>(({
                 </div>
               )}
 
-              {invoice.taxTotal > 0 && (
+              {company.taxEnabled && invoice.taxTotal > 0 && (
                 <div className="flex justify-between text-slate-500 text-sm">
                   <span>Tax ({company.defaultVat}%)</span>
                   <span>{formatCurrency(invoice.taxTotal, currency)}</span>
@@ -244,13 +244,13 @@ const InvoicePDF = forwardRef<HTMLDivElement, InvoicePDFProps>(({
                 <span>Subtotal:</span>
                 <span>{formatCurrency(invoice.subtotal, currency)}</span>
               </div>
-              {invoice.discountValue > 0 && (
+              {company.discountEnabled && invoice.discountValue > 0 && (
                 <div className="flex justify-between font-medium text-green-600">
                   <span>Discount:</span>
                   <span>-{formatCurrency(invoice.discountType === 'percentage' ? (invoice.subtotal * invoice.discountValue / 100) : invoice.discountValue, currency)}</span>
                 </div>
               )}
-               {invoice.taxTotal > 0 && (
+               {company.taxEnabled && invoice.taxTotal > 0 && (
                 <div className="flex justify-between font-medium text-slate-600">
                   <span>Tax ({company.defaultVat}%):</span>
                   <span>{formatCurrency(invoice.taxTotal, currency)}</span>
@@ -338,16 +338,18 @@ const InvoicePDF = forwardRef<HTMLDivElement, InvoicePDFProps>(({
               <span>SUBTOTAL</span>
               <span>{formatCurrency(invoice.subtotal, currency)}</span>
             </div>
-            {invoice.discountValue > 0 && (
+            {company.discountEnabled && invoice.discountValue > 0 && (
               <div className="flex justify-between">
                 <span>DISCOUNT</span>
                 <span>-{formatCurrency(invoice.discountType === 'percentage' ? (invoice.subtotal * invoice.discountValue / 100) : invoice.discountValue, currency)}</span>
               </div>
             )}
-             <div className="flex justify-between">
-              <span>TAX</span>
-              <span>{formatCurrency(invoice.taxTotal, currency)}</span>
-            </div>
+             {company.taxEnabled && (
+               <div className="flex justify-between">
+                <span>TAX</span>
+                <span>{formatCurrency(invoice.taxTotal, currency)}</span>
+              </div>
+             )}
             <div className="flex justify-between font-bold text-xl border-t-2 border-black pt-2">
               <span>TOTAL</span>
               <span>{formatCurrency(invoice.grandTotal, currency)}</span>

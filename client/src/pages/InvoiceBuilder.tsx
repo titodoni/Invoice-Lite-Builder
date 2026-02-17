@@ -92,17 +92,19 @@ export default function InvoiceBuilder() {
 
     // 2. Calculate Tax
     let taxAmount = 0;
-    const taxRate = profile.defaultVat / 100;
+    const taxRate = profile.taxEnabled ? (profile.defaultVat / 100) : 0;
 
-    if (taxType === "include") {
-      // If tax is included, it's already in the subtotal
-      taxAmount = subtotal - (subtotal / (1 + taxRate));
-    } else {
-      // If tax is excluded, calculate it based on subtotal (adjusted for discount if before_tax)
-      const calculationBase = discountCalculation === "before_tax" 
-        ? (subtotal - discountAmount) 
-        : subtotal;
-      taxAmount = Math.max(0, calculationBase * taxRate);
+    if (profile.taxEnabled) {
+      if (taxType === "include") {
+        // If tax is included, it's already in the subtotal
+        taxAmount = subtotal - (subtotal / (1 + taxRate));
+      } else {
+        // If tax is excluded, calculate it based on subtotal (adjusted for discount if before_tax)
+        const calculationBase = discountCalculation === "before_tax" 
+          ? (subtotal - discountAmount) 
+          : subtotal;
+        taxAmount = Math.max(0, calculationBase * taxRate);
+      }
     }
 
     const grandTotal = taxType === "include" 
@@ -393,65 +395,70 @@ export default function InvoiceBuilder() {
                     <span>Subtotal</span>
                     <span>{formatCurrency(form.watch("subtotal"), form.watch("currency"))}</span>
                  </div>
-                 <div className="flex justify-between items-center">
-                    <span>Diskon</span>
-                    <div className="flex gap-2 w-32">
-                       <Input 
-                         type="number" 
-                         className="h-6 bg-slate-800 border-slate-700 text-right px-1" 
-                         {...form.register("discountValue", { valueAsNumber: true })}
-                       />
-                       <Select 
-                         value={form.watch("discountType")} 
-                         onValueChange={(v: any) => form.setValue("discountType", v)}
-                       >
-                          <SelectTrigger className="h-6 w-16 bg-slate-800 border-slate-700 px-1">
-                             <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                             <SelectItem value="fixed">Rp</SelectItem>
-                             <SelectItem value="percentage">%</SelectItem>
-                          </SelectContent>
-                       </Select>
-                    </div>
-                 </div>
                  
-                 <div className="pt-2 space-y-2 border-t border-slate-800 mt-2">
-                    <div className="flex items-center justify-between">
-                       <Label className="text-[10px] uppercase text-slate-500">Mode Pajak</Label>
-                       <Tabs 
-                         value={form.watch("taxType")} 
-                         onValueChange={(v: any) => form.setValue("taxType", v)}
-                         className="h-6"
-                       >
-                          <TabsList className="h-6 bg-slate-800 p-0.5">
-                             <TabsTrigger value="exclude" className="text-[10px] h-5 px-2">Exclude</TabsTrigger>
-                             <TabsTrigger value="include" className="text-[10px] h-5 px-2">Include</TabsTrigger>
-                          </TabsList>
-                       </Tabs>
-                    </div>
-                    
-                    {form.watch("taxType") === "exclude" && (
-                       <div className="flex items-center justify-between">
-                          <Label className="text-[10px] uppercase text-slate-500">Hitung Diskon</Label>
-                          <Tabs 
-                            value={form.watch("discountCalculation")} 
-                            onValueChange={(v: any) => form.setValue("discountCalculation", v)}
-                            className="h-6"
-                          >
-                             <TabsList className="h-6 bg-slate-800 p-0.5">
-                                <TabsTrigger value="before_tax" className="text-[10px] h-5 px-2">Sblm Pajak</TabsTrigger>
-                                <TabsTrigger value="after_tax" className="text-[10px] h-5 px-2">Stlh Pajak</TabsTrigger>
-                             </TabsList>
-                          </Tabs>
-                       </div>
-                    )}
-                 </div>
+                 {profile.discountEnabled && (
+                   <div className="flex justify-between items-center">
+                      <span>Diskon</span>
+                      <div className="flex gap-2 w-32">
+                         <Input 
+                           type="number" 
+                           className="h-6 bg-slate-800 border-slate-700 text-right px-1" 
+                           {...form.register("discountValue", { valueAsNumber: true })}
+                         />
+                         <Select 
+                           value={form.watch("discountType")} 
+                           onValueChange={(v: any) => form.setValue("discountType", v)}
+                         >
+                            <SelectTrigger className="h-6 w-16 bg-slate-800 border-slate-700 px-1">
+                               <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                               <SelectItem value="fixed">Rp</SelectItem>
+                               <SelectItem value="percentage">%</SelectItem>
+                            </SelectContent>
+                         </Select>
+                      </div>
+                   </div>
+                 )}
+                 
+                 {profile.taxEnabled && (
+                   <div className="pt-2 space-y-2 border-t border-slate-800 mt-2">
+                      <div className="flex items-center justify-between">
+                         <Label className="text-[10px] uppercase text-slate-500">Mode Pajak</Label>
+                         <Tabs 
+                           value={form.watch("taxType")} 
+                           onValueChange={(v: any) => form.setValue("taxType", v)}
+                           className="h-6"
+                         >
+                            <TabsList className="h-6 bg-slate-800 p-0.5">
+                               <TabsTrigger value="exclude" className="text-[10px] h-5 px-2">Exclude</TabsTrigger>
+                               <TabsTrigger value="include" className="text-[10px] h-5 px-2">Include</TabsTrigger>
+                            </TabsList>
+                         </Tabs>
+                      </div>
+                      
+                      {form.watch("taxType") === "exclude" && profile.discountEnabled && (
+                         <div className="flex items-center justify-between">
+                            <Label className="text-[10px] uppercase text-slate-500">Hitung Diskon</Label>
+                            <Tabs 
+                              value={form.watch("discountCalculation")} 
+                              onValueChange={(v: any) => form.setValue("discountCalculation", v)}
+                              className="h-6"
+                            >
+                               <TabsList className="h-6 bg-slate-800 p-0.5">
+                                  <TabsTrigger value="before_tax" className="text-[10px] h-5 px-2">Sblm Pajak</TabsTrigger>
+                                  <TabsTrigger value="after_tax" className="text-[10px] h-5 px-2">Stlh Pajak</TabsTrigger>
+                               </TabsList>
+                            </Tabs>
+                         </div>
+                      )}
 
-                 <div className="flex justify-between pt-2">
-                    <span>Pajak ({profile.defaultVat}%)</span>
-                    <span>{formatCurrency(form.watch("taxTotal"), form.watch("currency"))}</span>
-                 </div>
+                      <div className="flex justify-between pt-2">
+                        <span>Pajak ({profile.defaultVat}%)</span>
+                        <span>{formatCurrency(form.watch("taxTotal"), form.watch("currency"))}</span>
+                      </div>
+                   </div>
+                 )}
               </div>
               
               <Separator className="bg-slate-700" />

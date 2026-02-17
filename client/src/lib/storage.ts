@@ -103,7 +103,9 @@ export function useCompanyProfile() {
       companyName: "Perusahaan Saya",
       email: "halo@contoh.com",
       currency: "IDR",
-      defaultVat: 0
+      defaultVat: 0,
+      taxEnabled: true,
+      discountEnabled: true
     },
     companyProfileSchema
   );
