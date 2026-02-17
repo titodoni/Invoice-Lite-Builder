@@ -65,50 +65,50 @@ export default function Dashboard() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight font-display">Dashboard</h2>
-        <p className="text-muted-foreground">Overview of your business performance.</p>
+        <h2 className="text-3xl font-bold tracking-tight font-display">Dasbor</h2>
+        <p className="text-muted-foreground">Ikhtisar performa bisnis Anda.</p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card className="hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Pendapatan</CardTitle>
             <DollarSign className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(totalRevenue)}</div>
             <p className="text-xs text-muted-foreground flex items-center mt-1">
               <CheckCircle2 className="w-3 h-3 mr-1 text-emerald-500" />
-              Paid invoices
+              Tagihan terbayar
             </p>
           </CardContent>
         </Card>
 
         <Card className="hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Amount</CardTitle>
+            <CardTitle className="text-sm font-medium">Jumlah Tertunda</CardTitle>
             <Clock className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(pendingAmount)}</div>
             <p className="text-xs text-muted-foreground flex items-center mt-1">
               <AlertCircle className="w-3 h-3 mr-1 text-amber-500" />
-              Unpaid & Drafts
+              Belum Bayar & Draf
             </p>
           </CardContent>
         </Card>
 
         <Card className="hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Clients</CardTitle>
+            <CardTitle className="text-sm font-medium">Klien Aktif</CardTitle>
             <Users className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{clients.length}</div>
             <p className="text-xs text-muted-foreground flex items-center mt-1">
               <ArrowUpRight className="w-3 h-3 mr-1 text-blue-500" />
-              Total customer base
+              Total basis pelanggan
             </p>
           </CardContent>
         </Card>
@@ -118,7 +118,7 @@ export default function Dashboard() {
         {/* Chart */}
         <Card className="col-span-4 hover:shadow-md transition-shadow">
           <CardHeader>
-            <CardTitle>Revenue Over Time</CardTitle>
+            <CardTitle>Pendapatan Seiring Waktu</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
             <ResponsiveContainer width="100%" height={350}>
@@ -135,7 +135,7 @@ export default function Dashboard() {
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
-                  tickFormatter={(value) => `$${value}`}
+                  tickFormatter={(value) => formatCurrency(value)}
                 />
                 <Tooltip 
                   cursor={{fill: 'transparent'}}
@@ -158,14 +158,14 @@ export default function Dashboard() {
         {/* Recent Invoices */}
         <Card className="col-span-3 hover:shadow-md transition-shadow flex flex-col">
           <CardHeader>
-            <CardTitle>Recent Invoices</CardTitle>
-            <CardDescription>Latest transactions created.</CardDescription>
+            <CardTitle>Tagihan Terakhir</CardTitle>
+            <CardDescription>Transaksi terakhir yang dibuat.</CardDescription>
           </CardHeader>
           <CardContent className="flex-1">
             <div className="space-y-6">
               {recentInvoices.length === 0 ? (
                  <div className="text-center py-8 text-muted-foreground">
-                   No invoices yet. Create your first one!
+                   Belum ada tagihan. Buat yang pertama!
                  </div>
               ) : (
                 recentInvoices.map((inv) => {
@@ -177,7 +177,7 @@ export default function Dashboard() {
                             <FileText className="w-5 h-5 text-muted-foreground" />
                          </div>
                          <div>
-                           <p className="text-sm font-medium leading-none">{client?.name || 'Unknown Client'}</p>
+                           <p className="text-sm font-medium leading-none">{client?.name || 'Klien Tidak Dikenal'}</p>
                            <p className="text-xs text-muted-foreground mt-1">{inv.invoiceNumber}</p>
                          </div>
                       </div>
@@ -191,7 +191,7 @@ export default function Dashboard() {
                             "text-slate-500 border-slate-500/30 bg-slate-500/10"
                           }
                         >
-                          {inv.status}
+                          {inv.status === "paid" ? "Terbayar" : inv.status === "unpaid" ? "Belum Bayar" : "Draf"}
                         </Badge>
                       </div>
                     </div>
@@ -203,7 +203,7 @@ export default function Dashboard() {
             <div className="mt-8 pt-4 border-t text-center">
               <Link href="/invoices">
                 <Button variant="ghost" className="w-full text-sm text-muted-foreground hover:text-foreground">
-                  View All Invoices
+                  Lihat Semua Tagihan
                 </Button>
               </Link>
             </div>

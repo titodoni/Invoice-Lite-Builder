@@ -100,9 +100,9 @@ export function useCompanyProfile() {
     KEYS.COMPANY,
     {
       id: "default",
-      companyName: "My Awesome Company",
-      email: "hello@example.com",
-      currency: "USD",
+      companyName: "Perusahaan Saya",
+      email: "halo@contoh.com",
+      currency: "IDR",
       defaultVat: 0
     },
     companyProfileSchema

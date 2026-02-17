@@ -55,11 +55,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   }, []);
 
   const navItems = [
-    { href: "/", icon: LayoutDashboard, label: "Dashboard" },
-    { href: "/invoices", icon: FileText, label: "Invoices" },
-    { href: "/clients", icon: Users, label: "Clients" },
-    { href: "/items", icon: Package, label: "Items" },
-    { href: "/settings", icon: Settings, label: "Settings" },
+    { href: "/", icon: LayoutDashboard, label: "Beranda" },
+    { href: "/invoices", icon: FileText, label: "Tagihan" },
+    { href: "/clients", icon: Users, label: "Klien" },
+    { href: "/items", icon: Package, label: "Produk/Jasa" },
+    { href: "/settings", icon: Settings, label: "Pengaturan" },
   ];
 
   return (
@@ -95,7 +95,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             </div>
             <div>
               <h1 className="font-display font-bold text-lg leading-none">{profile.companyName || "InvoiceLite"}</h1>
-              <p className="text-xs text-muted-foreground mt-1">Free Invoice Generator</p>
+              <p className="text-xs text-muted-foreground mt-1">Pembuat Tagihan Gratis</p>
             </div>
           </div>
 
@@ -112,9 +112,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
           <div className="mt-auto pt-6 border-t">
             <div className="bg-muted/50 rounded-xl p-4">
-              <h4 className="font-medium text-sm mb-1">Need help?</h4>
-              <p className="text-xs text-muted-foreground mb-3">Check our documentation for tips.</p>
-              <Button size="sm" variant="outline" className="w-full text-xs h-8">View Docs</Button>
+              <h4 className="font-medium text-sm mb-1">Butuh bantuan?</h4>
+              <p className="text-xs text-muted-foreground mb-3">Lihat dokumentasi kami.</p>
+              <Button size="sm" variant="outline" className="w-full text-xs h-8">Lihat Dokumen</Button>
             </div>
           </div>
         </div>
@@ -135,7 +135,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
              <Link href="/invoices/new">
                <Button className="rounded-full shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all">
                  <Plus className="w-4 h-4 mr-2" />
-                 New Invoice
+                 Buat Tagihan
                </Button>
              </Link>
           </div>

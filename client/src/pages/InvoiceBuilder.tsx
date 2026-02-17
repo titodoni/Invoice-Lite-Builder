@@ -163,10 +163,10 @@ export default function InvoiceBuilder() {
             </Button>
             <div>
               <h2 className="text-3xl font-bold tracking-tight font-display">
-                {isEditMode ? "Edit Invoice" : "New Invoice"}
+                {isEditMode ? "Edit Tagihan" : "Tagihan Baru"}
               </h2>
               <p className="text-muted-foreground text-sm">
-                {isEditMode ? `Editing ${existingInvoice?.invoiceNumber}` : "Create a new invoice for your client"}
+                {isEditMode ? `Mengedit ${existingInvoice?.invoiceNumber}` : "Buat tagihan baru untuk klien Anda"}
               </p>
             </div>
          </div>
@@ -174,23 +174,23 @@ export default function InvoiceBuilder() {
             <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
                <DialogTrigger asChild>
                   <Button variant="outline">
-                    <Printer className="w-4 h-4 mr-2" /> Preview
+                    <Printer className="w-4 h-4 mr-2" /> Pratinjau
                   </Button>
                </DialogTrigger>
                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                  <div className="flex justify-between items-center mb-4 sticky top-0 bg-background z-10 py-2 border-b">
                     <div className="flex items-center gap-4">
-                       <h3 className="font-bold">Preview</h3>
+                       <h3 className="font-bold">Pratinjau</h3>
                        <Tabs value={template} onValueChange={(v: any) => setTemplate(v)}>
                           <TabsList>
                              <TabsTrigger value="modern">Modern</TabsTrigger>
-                             <TabsTrigger value="corporate">Corporate</TabsTrigger>
+                             <TabsTrigger value="corporate">Korporat</TabsTrigger>
                              <TabsTrigger value="minimal">Minimal</TabsTrigger>
                           </TabsList>
                        </Tabs>
                     </div>
                     <Button onClick={handleDownloadPDF}>
-                       <Download className="w-4 h-4 mr-2" /> Download PDF
+                       <Download className="w-4 h-4 mr-2" /> Unduh PDF
                     </Button>
                  </div>
                  <div className="bg-slate-100 p-8 rounded-lg overflow-auto flex justify-center">
@@ -205,7 +205,7 @@ export default function InvoiceBuilder() {
                </DialogContent>
             </Dialog>
             <Button onClick={form.handleSubmit(onSubmit)} className="shadow-lg shadow-primary/20">
-              <Save className="w-4 h-4 mr-2" /> Save Invoice
+              <Save className="w-4 h-4 mr-2" /> Simpan Tagihan
             </Button>
          </div>
       </div>
@@ -217,17 +217,17 @@ export default function InvoiceBuilder() {
           <Card>
             <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                <div className="space-y-2">
-                 <Label>Invoice Number</Label>
+                 <Label>Nomor Tagihan</Label>
                  <Input {...form.register("invoiceNumber")} className="font-mono" />
                </div>
                <div className="space-y-2">
-                 <Label>Currency</Label>
+                 <Label>Mata Uang</Label>
                  <Select 
                    value={form.watch("currency")} 
                    onValueChange={(val: any) => form.setValue("currency", val)}
                  >
                    <SelectTrigger>
-                     <SelectValue placeholder="Select currency" />
+                     <SelectValue placeholder="Pilih mata uang" />
                    </SelectTrigger>
                    <SelectContent>
                      {["IDR", "USD", "EUR", "SGD", "MYR"].map(c => (
@@ -237,12 +237,12 @@ export default function InvoiceBuilder() {
                  </Select>
                </div>
                <div className="space-y-2">
-                 <Label>Date Issued</Label>
+                 <Label>Tanggal Terbit</Label>
                  <Popover>
                     <PopoverTrigger asChild>
                       <Button variant="outline" className="w-full justify-start text-left font-normal">
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {form.watch("date") ? format(new Date(form.watch("date")), "PPP") : <span>Pick a date</span>}
+                        {form.watch("date") ? format(new Date(form.watch("date")), "dd MMM yyyy") : <span>Pilih tanggal</span>}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0">
@@ -255,12 +255,12 @@ export default function InvoiceBuilder() {
                  </Popover>
                </div>
                <div className="space-y-2">
-                 <Label>Due Date</Label>
+                 <Label>Jatuh Tempo</Label>
                  <Popover>
                     <PopoverTrigger asChild>
                       <Button variant="outline" className="w-full justify-start text-left font-normal">
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {form.watch("dueDate") ? format(new Date(form.watch("dueDate")), "PPP") : <span>Pick a date</span>}
+                        {form.watch("dueDate") ? format(new Date(form.watch("dueDate")), "dd MMM yyyy") : <span>Pilih tanggal</span>}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0">
@@ -279,9 +279,9 @@ export default function InvoiceBuilder() {
           <Card>
             <CardContent className="p-6 space-y-4">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-lg">Items</h3>
+                <h3 className="font-semibold text-lg">Item</h3>
                 <Button variant="outline" size="sm" onClick={() => append({ id: uuidv4(), name: "", quantity: 1, price: 0, description: "" })}>
-                  <Plus className="w-4 h-4 mr-2" /> Add Item
+                  <Plus className="w-4 h-4 mr-2" /> Tambah Item
                 </Button>
               </div>
 
@@ -289,7 +289,7 @@ export default function InvoiceBuilder() {
                 {fields.map((field, index) => (
                   <div key={field.id} className="grid grid-cols-12 gap-4 items-start bg-muted/30 p-4 rounded-lg border border-transparent hover:border-border transition-all">
                      <div className="col-span-12 md:col-span-5 space-y-2">
-                        <Label className="text-xs text-muted-foreground">Item Name / Description</Label>
+                        <Label className="text-xs text-muted-foreground">Nama Item / Deskripsi</Label>
                         <div className="flex gap-2">
                            <Select onValueChange={(val) => handleItemSelect(index, val)}>
                               <SelectTrigger className="w-[40px] px-0 justify-center">
@@ -301,20 +301,20 @@ export default function InvoiceBuilder() {
                                  ))}
                               </SelectContent>
                            </Select>
-                           <Input placeholder="Item Name" {...form.register(`items.${index}.name`)} />
+                           <Input placeholder="Nama Item" {...form.register(`items.${index}.name`)} />
                         </div>
                         <Textarea 
-                          placeholder="Description (optional)" 
+                          placeholder="Deskripsi (opsional)" 
                           className="h-10 min-h-[40px] resize-none text-xs" 
                           {...form.register(`items.${index}.description`)} 
                         />
                      </div>
                      <div className="col-span-4 md:col-span-2 space-y-2">
-                        <Label className="text-xs text-muted-foreground">Qty</Label>
+                        <Label className="text-xs text-muted-foreground">Jml</Label>
                         <Input type="number" min="1" {...form.register(`items.${index}.quantity`, { valueAsNumber: true })} />
                      </div>
                      <div className="col-span-4 md:col-span-3 space-y-2">
-                        <Label className="text-xs text-muted-foreground">Price</Label>
+                        <Label className="text-xs text-muted-foreground">Harga</Label>
                         <Input type="number" min="0" step="0.01" {...form.register(`items.${index}.price`, { valueAsNumber: true })} />
                      </div>
                      <div className="col-span-4 md:col-span-2 flex flex-col items-end justify-between h-full pt-6">
@@ -339,9 +339,9 @@ export default function InvoiceBuilder() {
           
           <Card>
             <CardContent className="p-6">
-               <Label>Notes</Label>
+               <Label>Catatan</Label>
                <Textarea 
-                 placeholder="Payment terms, thank you note, etc." 
+                 placeholder="Syarat pembayaran, ucapan terima kasih, dll." 
                  className="mt-2"
                  {...form.register("notes")} 
                />
@@ -354,13 +354,13 @@ export default function InvoiceBuilder() {
           {/* Client Selection */}
           <Card>
             <CardContent className="p-6 space-y-4">
-              <h3 className="font-semibold">Client</h3>
+              <h3 className="font-semibold">Klien</h3>
               <Select 
                 value={form.watch("clientId")} 
                 onValueChange={(val) => form.setValue("clientId", val)}
               >
                 <SelectTrigger>
-                   <SelectValue placeholder="Select a client" />
+                   <SelectValue placeholder="Pilih klien" />
                 </SelectTrigger>
                 <SelectContent>
                    {clients.map(client => (
@@ -376,7 +376,7 @@ export default function InvoiceBuilder() {
               )}
 
               <Button variant="link" className="px-0 text-primary h-auto" onClick={() => window.location.href = "/clients"}>
-                 + Add New Client
+                 + Tambah Klien Baru
               </Button>
             </CardContent>
           </Card>
@@ -384,7 +384,7 @@ export default function InvoiceBuilder() {
           {/* Summary */}
           <Card className="bg-slate-900 text-slate-50 border-slate-800">
             <CardContent className="p-6 space-y-4">
-              <h3 className="font-semibold text-lg">Summary</h3>
+              <h3 className="font-semibold text-lg">Ringkasan</h3>
               
               <div className="space-y-2 text-sm text-slate-400">
                  <div className="flex justify-between">
@@ -392,7 +392,7 @@ export default function InvoiceBuilder() {
                     <span>{formatCurrency(form.watch("subtotal"), form.watch("currency"))}</span>
                  </div>
                  <div className="flex justify-between items-center">
-                    <span>Discount</span>
+                    <span>Diskon</span>
                     <div className="flex gap-2 w-32">
                        <Input 
                          type="number" 
@@ -407,7 +407,7 @@ export default function InvoiceBuilder() {
                              <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                             <SelectItem value="fixed">$</SelectItem>
+                             <SelectItem value="fixed">Rp</SelectItem>
                              <SelectItem value="percentage">%</SelectItem>
                           </SelectContent>
                        </Select>
@@ -416,7 +416,7 @@ export default function InvoiceBuilder() {
                  
                  <div className="pt-2 space-y-2 border-t border-slate-800 mt-2">
                     <div className="flex items-center justify-between">
-                       <Label className="text-[10px] uppercase text-slate-500">Tax Mode</Label>
+                       <Label className="text-[10px] uppercase text-slate-500">Mode Pajak</Label>
                        <Tabs 
                          value={form.watch("taxType")} 
                          onValueChange={(v: any) => form.setValue("taxType", v)}
@@ -431,15 +431,15 @@ export default function InvoiceBuilder() {
                     
                     {form.watch("taxType") === "exclude" && (
                        <div className="flex items-center justify-between">
-                          <Label className="text-[10px] uppercase text-slate-500">Discount Calc</Label>
+                          <Label className="text-[10px] uppercase text-slate-500">Hitung Diskon</Label>
                           <Tabs 
                             value={form.watch("discountCalculation")} 
                             onValueChange={(v: any) => form.setValue("discountCalculation", v)}
                             className="h-6"
                           >
                              <TabsList className="h-6 bg-slate-800 p-0.5">
-                                <TabsTrigger value="before_tax" className="text-[10px] h-5 px-2">Before Tax</TabsTrigger>
-                                <TabsTrigger value="after_tax" className="text-[10px] h-5 px-2">After Tax</TabsTrigger>
+                                <TabsTrigger value="before_tax" className="text-[10px] h-5 px-2">Sblm Pajak</TabsTrigger>
+                                <TabsTrigger value="after_tax" className="text-[10px] h-5 px-2">Stlh Pajak</TabsTrigger>
                              </TabsList>
                           </Tabs>
                        </div>
@@ -447,7 +447,7 @@ export default function InvoiceBuilder() {
                  </div>
 
                  <div className="flex justify-between pt-2">
-                    <span>Tax ({profile.defaultVat}%)</span>
+                    <span>Pajak ({profile.defaultVat}%)</span>
                     <span>{formatCurrency(form.watch("taxTotal"), form.watch("currency"))}</span>
                  </div>
               </div>
@@ -469,9 +469,9 @@ export default function InvoiceBuilder() {
                        <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                       <SelectItem value="draft">Draft</SelectItem>
-                       <SelectItem value="paid">Paid</SelectItem>
-                       <SelectItem value="unpaid">Unpaid</SelectItem>
+                       <SelectItem value="draft">Draf</SelectItem>
+                       <SelectItem value="paid">Terbayar</SelectItem>
+                       <SelectItem value="unpaid">Belum Bayar</SelectItem>
                     </SelectContent>
                  </Select>
               </div>

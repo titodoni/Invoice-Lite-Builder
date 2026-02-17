@@ -84,45 +84,45 @@ export default function Clients() {
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight font-display">Clients</h2>
-          <p className="text-muted-foreground">Manage your customer database.</p>
+          <h2 className="text-3xl font-bold tracking-tight font-display">Klien</h2>
+          <p className="text-muted-foreground">Kelola basis data pelanggan Anda.</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
              <Button onClick={handleNew} className="shadow-lg shadow-primary/20">
-               <Plus className="mr-2 h-4 w-4" /> Add Client
+               <Plus className="mr-2 h-4 w-4" /> Tambah Klien
              </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>{editingClient ? "Edit Client" : "New Client"}</DialogTitle>
+              <DialogTitle>{editingClient ? "Edit Klien" : "Klien Baru"}</DialogTitle>
             </DialogHeader>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
                <div className="space-y-2">
-                 <Label>Full Name</Label>
-                 <Input {...form.register("name")} placeholder="John Doe" />
+                 <Label>Nama Lengkap</Label>
+                 <Input {...form.register("name")} placeholder="Budi Santoso" />
                  {form.formState.errors.name && <p className="text-red-500 text-xs">{form.formState.errors.name.message}</p>}
                </div>
                <div className="space-y-2">
-                 <Label>Company</Label>
-                 <Input {...form.register("company")} placeholder="Acme Corp" />
+                 <Label>Perusahaan</Label>
+                 <Input {...form.register("company")} placeholder="PT. Maju Mundur" />
                </div>
                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Email</Label>
-                    <Input {...form.register("email")} placeholder="john@example.com" />
+                    <Input {...form.register("email")} placeholder="budi@contoh.com" />
                   </div>
                   <div className="space-y-2">
-                    <Label>Phone</Label>
-                    <Input {...form.register("phone")} placeholder="+1 234 567 890" />
+                    <Label>Telepon</Label>
+                    <Input {...form.register("phone")} placeholder="+62 812 3456 7890" />
                   </div>
                </div>
                <div className="space-y-2">
-                 <Label>Address</Label>
-                 <Input {...form.register("address")} placeholder="123 Street, City" />
+                 <Label>Alamat</Label>
+                 <Input {...form.register("address")} placeholder="Jl. Sudirman No. 123, Jakarta" />
                </div>
                <DialogFooter>
-                 <Button type="submit">Save Client</Button>
+                 <Button type="submit">Simpan Klien</Button>
                </DialogFooter>
             </form>
           </DialogContent>
@@ -132,7 +132,7 @@ export default function Clients() {
       <div className="flex items-center py-4 bg-card rounded-lg border px-4 shadow-sm">
         <Search className="w-5 h-5 text-muted-foreground mr-3" />
         <Input 
-          placeholder="Search clients..." 
+          placeholder="Cari klien..." 
           className="border-none shadow-none focus-visible:ring-0 bg-transparent p-0 h-auto text-base"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -158,14 +158,14 @@ export default function Clients() {
                        <Pencil className="w-4 h-4 mr-2" /> Edit
                     </DropdownMenuItem>
                     <DropdownMenuItem className="text-destructive" onClick={() => deleteClient(client.id)}>
-                       <Trash2 className="w-4 h-4 mr-2" /> Delete
+                       <Trash2 className="w-4 h-4 mr-2" /> Hapus
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
               
               <h3 className="font-bold text-lg leading-tight">{client.name}</h3>
-              <p className="text-sm text-muted-foreground mb-4">{client.company || "Independent"}</p>
+              <p className="text-sm text-muted-foreground mb-4">{client.company || "Mandiri"}</p>
               
               <div className="space-y-2 text-sm text-slate-600">
                 {client.email && (
@@ -192,7 +192,7 @@ export default function Clients() {
         ))}
         {filteredClients.length === 0 && (
           <div className="col-span-full py-12 text-center text-muted-foreground border-2 border-dashed rounded-xl">
-             No clients found. Add your first client to get started.
+             Klien tidak ditemukan. Tambahkan klien pertama Anda untuk memulai.
           </div>
         )}
       </div>

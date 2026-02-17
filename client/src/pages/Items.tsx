@@ -82,41 +82,41 @@ export default function Items() {
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight font-display">Items & Services</h2>
-          <p className="text-muted-foreground">Manage reusable line items for invoices.</p>
+          <h2 className="text-3xl font-bold tracking-tight font-display">Produk & Jasa</h2>
+          <p className="text-muted-foreground">Kelola item yang sering digunakan dalam tagihan.</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
              <Button onClick={handleNew} className="shadow-lg shadow-primary/20">
-               <Plus className="mr-2 h-4 w-4" /> Add Item
+               <Plus className="mr-2 h-4 w-4" /> Tambah Item
              </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>{editingItem ? "Edit Item" : "New Item"}</DialogTitle>
+              <DialogTitle>{editingItem ? "Edit Item" : "Item Baru"}</DialogTitle>
             </DialogHeader>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
                <div className="space-y-2">
-                 <Label>Item Name</Label>
-                 <Input {...form.register("name")} placeholder="Web Development" />
+                 <Label>Nama Item</Label>
+                 <Input {...form.register("name")} placeholder="Pengembangan Web" />
                  {form.formState.errors.name && <p className="text-red-500 text-xs">{form.formState.errors.name.message}</p>}
                </div>
                <div className="space-y-2">
-                 <Label>Description</Label>
-                 <Textarea {...form.register("description")} placeholder="Details about the service..." />
+                 <Label>Deskripsi</Label>
+                 <Textarea {...form.register("description")} placeholder="Detail tentang layanan..." />
                </div>
                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Price</Label>
+                    <Label>Harga</Label>
                     <Input type="number" step="0.01" {...form.register("price", { valueAsNumber: true })} />
                   </div>
                   <div className="space-y-2">
-                    <Label>Unit (e.g. hr, pc)</Label>
+                    <Label>Unit (misal: jam, pc)</Label>
                     <Input {...form.register("unit")} />
                   </div>
                </div>
                <DialogFooter>
-                 <Button type="submit">Save Item</Button>
+                 <Button type="submit">Simpan Item</Button>
                </DialogFooter>
             </form>
           </DialogContent>
@@ -126,7 +126,7 @@ export default function Items() {
       <div className="flex items-center py-4 bg-card rounded-lg border px-4 shadow-sm">
         <Search className="w-5 h-5 text-muted-foreground mr-3" />
         <Input 
-          placeholder="Search items..." 
+          placeholder="Cari item..." 
           className="border-none shadow-none focus-visible:ring-0 bg-transparent p-0 h-auto text-base"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -139,7 +139,7 @@ export default function Items() {
                <TableRow>
                   <TableHead className="w-[300px]">Item</TableHead>
                   <TableHead>Unit</TableHead>
-                  <TableHead className="text-right">Price</TableHead>
+                  <TableHead className="text-right">Harga</TableHead>
                   <TableHead className="w-[100px]"></TableHead>
                </TableRow>
             </TableHeader>
@@ -174,7 +174,7 @@ export default function Items() {
                {filteredItems.length === 0 && (
                   <TableRow>
                      <TableCell colSpan={4} className="h-32 text-center text-muted-foreground">
-                        No items found.
+                        Item tidak ditemukan.
                      </TableCell>
                   </TableRow>
                )}

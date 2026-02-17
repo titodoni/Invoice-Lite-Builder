@@ -19,7 +19,7 @@ export const companyProfileSchema = z.object({
   bankAccount: z.string().optional(),
   taxId: z.string().optional(),
   defaultVat: z.coerce.number().min(0).default(0),
-  currency: z.enum(["IDR", "USD", "EUR", "SGD", "MYR"]).default("USD"),
+  currency: z.enum(["IDR", "USD", "EUR", "SGD", "MYR"]).default("IDR"),
 });
 
 export const clientSchema = z.object({

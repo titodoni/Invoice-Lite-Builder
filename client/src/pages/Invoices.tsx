@@ -52,6 +52,14 @@ export default function Invoices() {
     }
   };
 
+  const getStatusLabel = (status: string) => {
+    switch(status) {
+      case "paid": return "Terbayar";
+      case "unpaid": return "Belum Bayar";
+      default: return "Draf";
+    }
+  };
+
   const handleStatusChange = (invoice: Invoice, newStatus: "paid" | "unpaid" | "draft") => {
     updateInvoice(invoice.id, { status: newStatus });
   };
@@ -60,12 +68,12 @@ export default function Invoices() {
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight font-display">Invoices</h2>
-          <p className="text-muted-foreground">Manage and track all your invoices.</p>
+          <h2 className="text-3xl font-bold tracking-tight font-display">Tagihan</h2>
+          <p className="text-muted-foreground">Kelola dan pantau semua tagihan Anda.</p>
         </div>
         <Link href="/invoices/new">
           <Button className="shadow-lg shadow-primary/20">
-            <Plus className="mr-2 h-4 w-4" /> Create Invoice
+            <Plus className="mr-2 h-4 w-4" /> Buat Tagihan
           </Button>
         </Link>
       </div>
@@ -73,7 +81,7 @@ export default function Invoices() {
       <div className="flex items-center py-4 bg-card rounded-lg border px-4 shadow-sm">
         <Search className="w-5 h-5 text-muted-foreground mr-3" />
         <Input 
-          placeholder="Search by invoice # or client name..." 
+          placeholder="Cari berdasarkan nomor tagihan atau nama klien..." 
           className="border-none shadow-none focus-visible:ring-0 bg-transparent p-0 h-auto text-base"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -84,11 +92,11 @@ export default function Invoices() {
         <Table>
           <TableHeader className="bg-muted/40">
             <TableRow>
-              <TableHead className="w-[100px]">Invoice #</TableHead>
-              <TableHead>Client</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Due Date</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
+              <TableHead className="w-[100px]">No. Tagihan</TableHead>
+              <TableHead>Klien</TableHead>
+              <TableHead>Tanggal</TableHead>
+              <TableHead>Jatuh Tempo</TableHead>
+              <TableHead className="text-right">Jumlah</TableHead>
               <TableHead className="text-center">Status</TableHead>
               <TableHead className="w-[50px]"></TableHead>
             </TableRow>
@@ -97,7 +105,7 @@ export default function Invoices() {
             {filteredInvoices.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
-                  {searchTerm ? "No invoices found matching your search." : "No invoices created yet."}
+                  {searchTerm ? "Tidak ada tagihan yang cocok dengan pencarian Anda." : "Belum ada tagihan yang dibuat."}
                 </TableCell>
               </TableRow>
             ) : (
@@ -107,51 +115,51 @@ export default function Invoices() {
                   <TableRow key={invoice.id} className="group hover:bg-muted/30 transition-colors">
                     <TableCell className="font-medium font-mono text-xs">{invoice.invoiceNumber}</TableCell>
                     <TableCell>
-                      <div className="font-medium">{client?.name || "Unknown"}</div>
+                      <div className="font-medium">{client?.name || "Tidak Dikenal"}</div>
                       <div className="text-xs text-muted-foreground hidden sm:block">{client?.email}</div>
                     </TableCell>
-                    <TableCell>{format(new Date(invoice.date), 'MMM dd, yyyy')}</TableCell>
-                    <TableCell>{format(new Date(invoice.dueDate), 'MMM dd, yyyy')}</TableCell>
+                    <TableCell>{format(new Date(invoice.date), 'dd MMM yyyy')}</TableCell>
+                    <TableCell>{format(new Date(invoice.dueDate), 'dd MMM yyyy')}</TableCell>
                     <TableCell className="text-right font-bold">
                        {formatCurrency(invoice.grandTotal, invoice.currency)}
                     </TableCell>
                     <TableCell className="text-center">
                       <Badge variant="outline" className={getStatusColor(invoice.status)}>
-                        {invoice.status}
+                        {getStatusLabel(invoice.status)}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <span className="sr-only">Open menu</span>
+                            <span className="sr-only">Buka menu</span>
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuLabel>Tindakan</DropdownMenuLabel>
                           <Link href={`/invoices/${invoice.id}`}>
                             <DropdownMenuItem className="cursor-pointer">
                               <Pencil className="mr-2 h-4 w-4" /> Edit
                             </DropdownMenuItem>
                           </Link>
                           <DropdownMenuItem onClick={() => window.location.href = `/invoices/${invoice.id}`}>
-                            <Download className="mr-2 h-4 w-4" /> Download PDF
+                            <Download className="mr-2 h-4 w-4" /> Unduh PDF
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuLabel>Status</DropdownMenuLabel>
                           <DropdownMenuItem onClick={() => handleStatusChange(invoice, "paid")}>
-                            Mark as Paid
+                            Tandai Sudah Bayar
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleStatusChange(invoice, "unpaid")}>
-                            Mark as Unpaid
+                            Tandai Belum Bayar
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem 
                             onClick={() => deleteInvoice(invoice.id)}
                             className="text-red-600 focus:text-red-600"
                           >
-                            <Trash2 className="mr-2 h-4 w-4" /> Delete
+                            <Trash2 className="mr-2 h-4 w-4" /> Hapus
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
