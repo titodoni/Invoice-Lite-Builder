@@ -10,10 +10,8 @@ import {
   DollarSign, 
   Users, 
   FileText, 
-  ArrowUpRight,
   Clock,
-  CheckCircle2,
-  AlertCircle
+  Receipt
 } from "lucide-react";
 import { 
   BarChart, 
@@ -62,153 +60,198 @@ export default function Dashboard() {
     return { name: month, total: revenue };
   });
 
+  const stats = [
+    {
+      title: "Pendapatan",
+      value: totalRevenue,
+      icon: DollarSign,
+      color: "text-emerald-500",
+      bgColor: "bg-emerald-50",
+      desc: "Tagihan terbayar"
+    },
+    {
+      title: "Tertunda",
+      value: pendingAmount,
+      icon: Clock,
+      color: "text-amber-500",
+      bgColor: "bg-amber-50",
+      desc: "Belum & Draf"
+    },
+    {
+      title: "Klien",
+      value: clients.length,
+      icon: Users,
+      color: "text-blue-500",
+      bgColor: "bg-blue-50",
+      desc: "Total klien"
+    }
+  ];
+
   return (
-    <div className="space-y-8">
-      <div>
+    <div className="space-y-6">
+      {/* Mobile Header */}
+      <div className="md:hidden">
+        <h1 className="text-xl font-bold font-display">Beranda</h1>
+        <p className="text-sm text-muted-foreground">Ringkasan bisnis Anda</p>
+      </div>
+
+      {/* Desktop Header */}
+      <div className="hidden md:block">
         <h2 className="text-3xl font-bold tracking-tight font-display">Dasbor</h2>
         <p className="text-muted-foreground">Ikhtisar performa bisnis Anda.</p>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Pendapatan</CardTitle>
-            <DollarSign className="h-4 w-4 text-emerald-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(totalRevenue)}</div>
-            <p className="text-xs text-muted-foreground flex items-center mt-1">
-              <CheckCircle2 className="w-3 h-3 mr-1 text-emerald-500" />
-              Tagihan terbayar
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Jumlah Tertunda</CardTitle>
-            <Clock className="h-4 w-4 text-amber-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(pendingAmount)}</div>
-            <p className="text-xs text-muted-foreground flex items-center mt-1">
-              <AlertCircle className="w-3 h-3 mr-1 text-amber-500" />
-              Belum Bayar & Draf
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Klien Aktif</CardTitle>
-            <Users className="h-4 w-4 text-blue-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{clients.length}</div>
-            <p className="text-xs text-muted-foreground flex items-center mt-1">
-              <ArrowUpRight className="w-3 h-3 mr-1 text-blue-500" />
-              Total basis pelanggan
-            </p>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+        {stats.map((stat, index) => (
+          <Card key={index} className="hover:shadow-md transition-shadow">
+            <CardContent className="p-4 md:p-6">
+              <div className="flex items-center gap-4">
+                <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl ${stat.bgColor} flex items-center justify-center shrink-0`}>
+                  <stat.icon className={`w-5 h-5 md:w-6 md:h-6 ${stat.color}`} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs md:text-sm text-muted-foreground">{stat.title}</p>
+                  <p className="text-lg md:text-2xl font-bold truncate">
+                    {typeof stat.value === 'number' && stat.value > 999 
+                      ? formatCurrency(stat.value).replace(/[^0-9.,]/g, '')
+                      : stat.value}
+                  </p>
+                  <p className="text-[10px] md:text-xs text-muted-foreground hidden sm:block">{stat.desc}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+      <div className="grid grid-cols-1 lg:grid-cols-7 gap-4 md:gap-6">
         {/* Chart */}
-        <Card className="col-span-4 hover:shadow-md transition-shadow">
-          <CardHeader>
-            <CardTitle>Pendapatan Seiring Waktu</CardTitle>
+        <Card className="lg:col-span-4">
+          <CardHeader className="p-4 md:p-6 pb-2">
+            <CardTitle className="text-base md:text-lg">Pendapatan 6 Bulan</CardTitle>
+            <CardDescription className="text-xs md:text-sm">Trend pendapatan terakhir</CardDescription>
           </CardHeader>
-          <CardContent className="pl-2">
-            <ResponsiveContainer width="100%" height={350}>
-              <BarChart data={chartData}>
-                <XAxis 
-                  dataKey="name" 
-                  stroke="#888888" 
-                  fontSize={12} 
-                  tickLine={false} 
-                  axisLine={false} 
-                />
-                <YAxis
-                  stroke="#888888"
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(value) => formatCurrency(value)}
-                />
-                <Tooltip 
-                  cursor={{fill: 'transparent'}}
-                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                />
-                <Bar 
-                  dataKey="total" 
-                  radius={[4, 4, 0, 0]} 
-                  className="fill-primary"
-                >
-                  {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={index === chartData.length - 1 ? 'hsl(var(--primary))' : 'hsl(var(--primary) / 0.5)'} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+          <CardContent className="p-4 md:p-6 pt-0">
+            <div className="h-[200px] md:h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                  <XAxis 
+                    dataKey="name" 
+                    stroke="#64748b" 
+                    fontSize={10}
+                    tickLine={false} 
+                    axisLine={false}
+                  />
+                  <YAxis
+                    stroke="#64748b"
+                    fontSize={10}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => value >= 1000000 ? `${(value/1000000).toFixed(0)}jt` : value >= 1000 ? `${(value/1000).toFixed(0)}rb` : value}
+                  />
+                  <Tooltip 
+                    cursor={{fill: 'transparent'}}
+                    contentStyle={{ 
+                      borderRadius: '8px', 
+                      border: 'none', 
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                      fontSize: '12px'
+                    }}
+                    formatter={(value: number) => [formatCurrency(value), 'Pendapatan']}
+                  />
+                  <Bar dataKey="total" radius={[4, 4, 0, 0]}>
+                    {chartData.map((_entry, index) => (
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={index === chartData.length - 1 ? 'hsl(var(--primary))' : 'hsl(var(--primary) / 0.4)'} 
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </CardContent>
         </Card>
 
         {/* Recent Invoices */}
-        <Card className="col-span-3 hover:shadow-md transition-shadow flex flex-col">
-          <CardHeader>
-            <CardTitle>Tagihan Terakhir</CardTitle>
-            <CardDescription>Transaksi terakhir yang dibuat.</CardDescription>
+        <Card className="lg:col-span-3">
+          <CardHeader className="p-4 md:p-6 pb-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-base md:text-lg">Tagihan Terakhir</CardTitle>
+                <CardDescription className="text-xs md:text-sm">Transaksi terbaru</CardDescription>
+              </div>
+              <Link href="/invoices">
+                <Button variant="ghost" size="sm" className="h-8 text-xs">
+                  Lihat Semua
+                </Button>
+              </Link>
+            </div>
           </CardHeader>
-          <CardContent className="flex-1">
-            <div className="space-y-6">
+          <CardContent className="p-4 md:p-6 pt-0">
+            <div className="space-y-3">
               {recentInvoices.length === 0 ? (
-                 <div className="text-center py-8 text-muted-foreground">
-                   Belum ada tagihan. Buat yang pertama!
-                 </div>
+                <div className="text-center py-8 text-muted-foreground">
+                  <Receipt className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                  <p className="text-sm">Belum ada tagihan</p>
+                  <Link href="/invoices/new">
+                    <Button variant="ghost" size="sm" className="mt-2">Buat tagihan pertama</Button>
+                  </Link>
+                </div>
               ) : (
                 recentInvoices.map((inv) => {
                   const client = clients.find(c => c.id === inv.clientId);
                   return (
-                    <div key={inv.id} className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4 min-w-0 flex-1">
-                         <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
-                            <FileText className="w-5 h-5 text-muted-foreground" />
-                         </div>
-                         <div className="min-w-0 flex-1">
-                           <p className="text-sm font-medium leading-none truncate">{client?.name || 'Klien Tidak Dikenal'}</p>
-                           <p className="text-xs text-muted-foreground mt-1 truncate">{inv.invoiceNumber}</p>
-                         </div>
+                    <Link key={inv.id} href={`/invoices/${inv.id}`}>
+                      <div className="flex items-center justify-between p-3 -mx-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                          <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                            <FileText className="w-4 h-4 text-muted-foreground" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium truncate">{client?.name || 'Unknown'}</p>
+                            <p className="text-xs text-muted-foreground font-mono">{inv.invoiceNumber}</p>
+                          </div>
+                        </div>
+                        <div className="text-right ml-3 shrink-0">
+                          <p className="text-sm font-bold">{formatCurrency(inv.grandTotal, inv.currency).replace(/[^0-9.,]/g, '')}</p>
+                          <Badge 
+                            variant="outline" 
+                            className={`text-[10px] ${
+                              inv.status === "paid" ? "text-emerald-600 border-emerald-200 bg-emerald-50" :
+                              inv.status === "unpaid" ? "text-amber-600 border-amber-200 bg-amber-50" :
+                              "text-slate-600 border-slate-200 bg-slate-50"
+                            }`}
+                          >
+                            {inv.status === "paid" ? "Lunas" : inv.status === "unpaid" ? "Belum" : "Draf"}
+                          </Badge>
+                        </div>
                       </div>
-                      <div className="text-right ml-4">
-                        <p className="text-sm font-bold">{formatCurrency(inv.grandTotal, inv.currency)}</p>
-                        <Badge 
-                          variant="outline" 
-                          className={
-                            inv.status === "paid" ? "text-emerald-500 border-emerald-500/30 bg-emerald-500/10" :
-                            inv.status === "unpaid" ? "text-amber-500 border-amber-500/30 bg-amber-500/10" :
-                            "text-slate-500 border-slate-500/30 bg-slate-500/10"
-                          }
-                        >
-                          {inv.status === "paid" ? "Terbayar" : inv.status === "unpaid" ? "Belum Bayar" : "Draf"}
-                        </Badge>
-                      </div>
-                    </div>
+                    </Link>
                   );
                 })
               )}
             </div>
-            
-            <div className="mt-8 pt-4 border-t text-center">
-              <Link href="/invoices">
-                <Button variant="ghost" className="w-full text-sm text-muted-foreground hover:text-foreground">
-                  Lihat Semua Tagihan
-                </Button>
-              </Link>
-            </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Quick Actions - Mobile Only */}
+      <div className="md:hidden grid grid-cols-2 gap-3">
+        <Link href="/invoices/new">
+          <Button className="w-full h-12" variant="default">
+            <Receipt className="w-4 h-4 mr-2" />
+            Buat Tagihan
+          </Button>
+        </Link>
+        <Link href="/clients">
+          <Button className="w-full h-12" variant="outline">
+            <Users className="w-4 h-4 mr-2" />
+            Tambah Klien
+          </Button>
+        </Link>
       </div>
     </div>
   );

@@ -1,59 +1,50 @@
 import { useItems } from "@/lib/storage";
 import { useState } from "react";
-import { v4 as uuidv4 } from "uuid";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { itemSchema, type Item } from "@shared/schema";
-import { formatCurrency } from "@/lib/utils";
-import { 
-  Plus, 
-  Search, 
-  Trash2, 
-  Pencil,
-  Tag
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogTrigger,
-  DialogFooter
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Plus, Search, MoreHorizontal, Pencil, Trash2, Package } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { itemSchema, type Item } from "@/lib/schema";
+import { v4 as uuidv4 } from "uuid";
+import { formatCurrency } from "@/lib/utils";
 
 export default function Items() {
   const { items, addItem, updateItem, deleteItem } = useItems();
   const [searchTerm, setSearchTerm] = useState("");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<Item | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const filteredItems = items.filter(i => 
+    i.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    i.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const form = useForm<Item>({
     resolver: zodResolver(itemSchema),
-    defaultValues: {
+    defaultValues: editingItem || {
       id: "",
       name: "",
       description: "",
-      unit: "hr",
+      unit: "",
       price: 0,
-      tax: 0
+      tax: 0,
     }
   });
-
-  const filteredItems = items.filter(i => 
-    i.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   const onSubmit = (data: Item) => {
     if (editingItem) {
@@ -72,115 +63,201 @@ export default function Items() {
     setIsDialogOpen(true);
   };
 
-  const handleNew = () => {
+  const handleAdd = () => {
     setEditingItem(null);
-    form.reset({ id: "", name: "", description: "", unit: "hr", price: 0, tax: 0 });
+    form.reset({ id: "", name: "", description: "", unit: "", price: 0, tax: 0 });
     setIsDialogOpen(true);
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight font-display">Produk & Jasa</h2>
-          <p className="text-muted-foreground">Kelola item yang sering digunakan dalam tagihan.</p>
-        </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-             <Button onClick={handleNew} className="shadow-lg shadow-primary/20">
-               <Plus className="mr-2 h-4 w-4" /> Tambah Item
-             </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{editingItem ? "Edit Item" : "Item Baru"}</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
-               <div className="space-y-2">
-                 <Label>Nama Item</Label>
-                 <Input {...form.register("name")} placeholder="Pengembangan Web" />
-                 {form.formState.errors.name && <p className="text-red-500 text-xs">{form.formState.errors.name.message}</p>}
-               </div>
-               <div className="space-y-2">
-                 <Label>Deskripsi</Label>
-                 <Textarea {...form.register("description")} placeholder="Detail tentang layanan..." />
-               </div>
-               <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Harga</Label>
-                    <Input type="number" step="0.01" {...form.register("price", { valueAsNumber: true })} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Unit (misal: jam, pc)</Label>
-                    <Input {...form.register("unit")} />
-                  </div>
-               </div>
-               <DialogFooter>
-                 <Button type="submit">Simpan Item</Button>
-               </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
+    <div className="space-y-4 md:space-y-6">
+      {/* Mobile Header */}
+      <div className="md:hidden">
+        <h1 className="text-xl font-bold font-display">Produk & Jasa</h1>
+        <p className="text-sm text-muted-foreground">{items.length} item</p>
       </div>
 
-      <div className="flex items-center py-4 bg-card rounded-lg border px-4 shadow-sm">
-        <Search className="w-5 h-5 text-muted-foreground mr-3" />
+      {/* Desktop Header */}
+      <div className="hidden md:flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold font-display">Produk/Jasa</h2>
+          <p className="text-muted-foreground text-sm">Kelola katalog produk dan jasa.</p>
+        </div>
+        <Button onClick={handleAdd}>
+          <Plus className="mr-2 h-4 w-4" /> Tambah Item
+        </Button>
+      </div>
+
+      {/* Search */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input 
-          placeholder="Cari item..." 
-          className="border-none shadow-none focus-visible:ring-0 bg-transparent p-0 h-auto text-base"
+          placeholder="Cari produk atau jasa..." 
+          className="pl-10 h-11 md:h-10"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
 
-      <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
-         <Table>
-            <TableHeader className="bg-muted/40">
-               <TableRow>
-                  <TableHead className="w-[300px]">Item</TableHead>
-                  <TableHead>Unit</TableHead>
-                  <TableHead className="text-right">Harga</TableHead>
-                  <TableHead className="w-[100px]"></TableHead>
-               </TableRow>
-            </TableHeader>
-            <TableBody>
-               {filteredItems.map(item => (
-                  <TableRow key={item.id} className="group hover:bg-muted/30">
-                     <TableCell>
-                        <div className="flex items-start gap-3">
-                           <div className="w-8 h-8 rounded bg-primary/10 flex items-center justify-center mt-1">
-                              <Tag className="w-4 h-4 text-primary" />
-                           </div>
-                           <div>
-                              <div className="font-semibold">{item.name}</div>
-                              <div className="text-sm text-muted-foreground">{item.description}</div>
-                           </div>
-                        </div>
-                     </TableCell>
-                     <TableCell className="text-muted-foreground">{item.unit}</TableCell>
-                     <TableCell className="text-right font-medium">{formatCurrency(item.price)}</TableCell>
-                     <TableCell>
-                        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(item)}>
-                              <Pencil className="w-4 h-4" />
-                           </Button>
-                           <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => deleteItem(item.id)}>
-                              <Trash2 className="w-4 h-4" />
-                           </Button>
-                        </div>
-                     </TableCell>
-                  </TableRow>
-               ))}
-               {filteredItems.length === 0 && (
-                  <TableRow>
-                     <TableCell colSpan={4} className="h-32 text-center text-muted-foreground">
-                        Item tidak ditemukan.
-                     </TableCell>
-                  </TableRow>
-               )}
-            </TableBody>
-         </Table>
+      {/* Mobile Card List */}
+      <div className="md:hidden space-y-3">
+        {filteredItems.length === 0 ? (
+          <div className="text-center py-12 bg-card rounded-xl border">
+            <Package className="w-12 h-12 text-muted-foreground/50 mx-auto mb-3" />
+            <p className="text-muted-foreground text-sm">
+              {searchTerm ? "Tidak ada hasil" : "Belum ada item"}
+            </p>
+          </div>
+        ) : (
+          filteredItems.map((item) => (
+            <Card key={item.id}>
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Package className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">{item.name}</h3>
+                      {item.description && (
+                        <p className="text-xs text-muted-foreground line-clamp-1">{item.description}</p>
+                      )}
+                    </div>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        <MoreHorizontal className="w-4 h-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => handleEdit(item)}>
+                        <Pencil className="mr-2 h-4 w-4" /> Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => deleteItem(item.id)}
+                        className="text-red-600 focus:text-red-600"
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" /> Hapus
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+                <div className="mt-3 pt-3 border-t flex items-center justify-between">
+                  <span className="text-lg font-bold">{formatCurrency(item.price)}</span>
+                  {item.unit && (
+                    <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
+                      per {item.unit}
+                    </span>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
+
+      {/* Desktop Table */}
+      <div className="hidden md:block rounded-xl border bg-card shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-muted/40">
+              <tr>
+                <th className="text-left p-4 text-sm font-medium">Nama</th>
+                <th className="text-left p-4 text-sm font-medium">Deskripsi</th>
+                <th className="text-left p-4 text-sm font-medium">Unit</th>
+                <th className="text-right p-4 text-sm font-medium">Harga</th>
+                <th className="w-16"></th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {filteredItems.map((item) => (
+                <tr key={item.id} className="hover:bg-muted/30">
+                  <td className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <Package className="w-4 h-4 text-primary" />
+                      </div>
+                      <span className="font-medium">{item.name}</span>
+                    </div>
+                  </td>
+                  <td className="p-4 text-muted-foreground max-w-xs truncate">
+                    {item.description || "-"}
+                  </td>
+                  <td className="p-4 text-muted-foreground">{item.unit || "-"}</td>
+                  <td className="p-4 text-right font-bold">
+                    {formatCurrency(item.price)}
+                  </td>
+                  <td className="p-4">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <MoreHorizontal className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleEdit(item)}>
+                          <Pencil className="mr-2 h-4 w-4" /> Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => deleteItem(item.id)}
+                          className="text-red-600 focus:text-red-600"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" /> Hapus
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Mobile FAB */}
+      <div className="md:hidden fixed bottom-20 right-4 z-30">
+        <Button size="lg" className="rounded-full shadow-lg h-14 w-14" onClick={handleAdd}>
+          <Plus className="w-6 h-6" />
+        </Button>
+      </div>
+
+      {/* Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-[95vw] md:max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{editingItem ? "Edit Item" : "Tambah Item"}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <Label>Nama Item *</Label>
+              <Input {...form.register("name")} placeholder="Nama produk atau jasa" />
+            </div>
+            <div className="space-y-2">
+              <Label>Deskripsi</Label>
+              <Input {...form.register("description")} placeholder="Deskripsi singkat" />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Harga *</Label>
+                <Input 
+                  type="number" 
+                  min="0" 
+                  step="0.01" 
+                  {...form.register("price", { valueAsNumber: true })} 
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Unit</Label>
+                <Input {...form.register("unit")} placeholder="pcs, jam, dll" />
+              </div>
+            </div>
+            <Button type="submit" className="w-full">
+              {editingItem ? "Simpan" : "Tambah"}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

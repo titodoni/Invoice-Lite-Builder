@@ -115,3 +115,28 @@
   .no-print { display: none !important; }
   .print-only { display: block !important; }
 }
+
+/* Mobile Safe Area Support */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .safe-area-pb {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Mobile Touch Improvements */
+@media (hover: none) {
+  .hover\:opacity-100:hover {
+    opacity: 1;
+  }
+}
+
+/* Prevent zoom on iOS inputs */
+input, select, textarea {
+  font-size: 16px;
+}
+
+/* Mobile Scroll Improvements */
+.scroll-smooth {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}

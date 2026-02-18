@@ -8,7 +8,7 @@ import {
   clientSchema,
   itemSchema,
   invoiceSchema 
-} from "@shared/schema";
+} from "@/lib/schema";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 
