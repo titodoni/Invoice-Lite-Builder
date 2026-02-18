@@ -4,12 +4,7 @@ import {
   type Client, 
   type Item, 
   type Invoice,
-  companyProfileSchema,
-  clientSchema,
-  itemSchema,
-  invoiceSchema 
 } from "@/lib/schema";
-import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 
 const KEYS = {
@@ -20,19 +15,13 @@ const KEYS = {
 };
 
 // --- Generic Storage Hook ---
-function useLocalStorage<T>(key: string, initialValue: T, schema?: z.ZodSchema<T>) {
+function useLocalStorage<T>(key: string, initialValue: T) {
   // Initialize state function to avoid reading localStorage on every render
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
       const item = window.localStorage.getItem(key);
       if (item) {
-        const parsed = JSON.parse(item);
-        // Validate if schema is provided
-        if (schema) {
-          const result = schema.safeParse(parsed);
-          return result.success ? result.data : initialValue;
-        }
-        return parsed;
+        return JSON.parse(item);
       }
       return initialValue;
     } catch (error) {
@@ -67,13 +56,7 @@ function useLocalStorage<T>(key: string, initialValue: T, schema?: z.ZodSchema<T
       try {
         const item = window.localStorage.getItem(key);
         if (item) {
-           const parsed = JSON.parse(item);
-           if (schema) {
-             const result = schema.safeParse(parsed);
-             if (result.success) setStoredValue(result.data);
-           } else {
-             setStoredValue(parsed);
-           }
+           setStoredValue(JSON.parse(item));
         }
       } catch (error) {
         console.error(error);
@@ -87,7 +70,7 @@ function useLocalStorage<T>(key: string, initialValue: T, schema?: z.ZodSchema<T
       window.removeEventListener("storage", handleStorageChange);
       window.removeEventListener("local-storage", handleStorageChange);
     };
-  }, [key, schema]);
+  }, [key]);
 
   return [storedValue, setValue] as const;
 }
@@ -106,13 +89,12 @@ export function useCompanyProfile() {
       defaultVat: 0,
       taxEnabled: true,
       discountEnabled: true
-    },
-    companyProfileSchema
+    }
   );
 
   const updateProfile = (data: CompanyProfile) => {
     setProfile(data);
-    toast({ title: "Profile updated", description: "Company settings saved successfully." });
+    toast({ title: "Tersimpan", description: "Pengaturan perusahaan diperbarui." });
   };
 
   return { profile, updateProfile };
@@ -120,21 +102,21 @@ export function useCompanyProfile() {
 
 export function useClients() {
   const { toast } = useToast();
-  const [clients, setClients] = useLocalStorage<Client[]>(KEYS.CLIENTS, [], z.array(clientSchema));
+  const [clients, setClients] = useLocalStorage<Client[]>(KEYS.CLIENTS, []);
 
   const addClient = (client: Client) => {
     setClients((prev) => [...prev, client]);
-    toast({ title: "Client added", description: `${client.name} has been added.` });
+    toast({ title: "Klien ditambahkan", description: `${client.name} telah ditambahkan.` });
   };
 
   const updateClient = (id: string, updates: Partial<Client>) => {
     setClients((prev) => prev.map((c) => (c.id === id ? { ...c, ...updates } : c)));
-    toast({ title: "Client updated", description: "Client details saved." });
+    toast({ title: "Klien diperbarui", description: "Data klien telah disimpan." });
   };
 
   const deleteClient = (id: string) => {
     setClients((prev) => prev.filter((c) => c.id !== id));
-    toast({ title: "Client deleted", description: "Client removed from database." });
+    toast({ title: "Klien dihapus", description: "Klien telah dihapus dari database." });
   };
 
   return { clients, addClient, updateClient, deleteClient };
@@ -142,21 +124,21 @@ export function useClients() {
 
 export function useItems() {
   const { toast } = useToast();
-  const [items, setItems] = useLocalStorage<Item[]>(KEYS.ITEMS, [], z.array(itemSchema));
+  const [items, setItems] = useLocalStorage<Item[]>(KEYS.ITEMS, []);
 
   const addItem = (item: Item) => {
     setItems((prev) => [...prev, item]);
-    toast({ title: "Item added", description: `${item.name} has been added.` });
+    toast({ title: "Item ditambahkan", description: `${item.name} telah ditambahkan.` });
   };
 
   const updateItem = (id: string, updates: Partial<Item>) => {
     setItems((prev) => prev.map((i) => (i.id === id ? { ...i, ...updates } : i)));
-    toast({ title: "Item updated", description: "Item details saved." });
+    toast({ title: "Item diperbarui", description: "Data item telah disimpan." });
   };
 
   const deleteItem = (id: string) => {
     setItems((prev) => prev.filter((i) => i.id !== id));
-    toast({ title: "Item deleted", description: "Item removed from database." });
+    toast({ title: "Item dihapus", description: "Item telah dihapus dari database." });
   };
 
   return { items, addItem, updateItem, deleteItem };
@@ -164,21 +146,21 @@ export function useItems() {
 
 export function useInvoices() {
   const { toast } = useToast();
-  const [invoices, setInvoices] = useLocalStorage<Invoice[]>(KEYS.INVOICES, [], z.array(invoiceSchema));
+  const [invoices, setInvoices] = useLocalStorage<Invoice[]>(KEYS.INVOICES, []);
 
   const addInvoice = (invoice: Invoice) => {
     setInvoices((prev) => [...prev, invoice]);
-    toast({ title: "Invoice created", description: `${invoice.invoiceNumber} saved successfully.` });
+    toast({ title: "Tagihan dibuat", description: `${invoice.invoiceNumber} berhasil disimpan.` });
   };
 
   const updateInvoice = (id: string, updates: Partial<Invoice>) => {
     setInvoices((prev) => prev.map((inv) => (inv.id === id ? { ...inv, ...updates } : inv)));
-    toast({ title: "Invoice updated", description: "Invoice details saved." });
+    toast({ title: "Tagihan diperbarui", description: "Data tagihan telah disimpan." });
   };
 
   const deleteInvoice = (id: string) => {
     setInvoices((prev) => prev.filter((inv) => inv.id !== id));
-    toast({ title: "Invoice deleted", description: "Invoice removed from database." });
+    toast({ title: "Tagihan dihapus", description: "Tagihan telah dihapus dari database." });
   };
 
   const getNextInvoiceNumber = () => {
