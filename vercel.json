@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "name": "invoicelite-client",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "routes": [
+    {
+      "src": "/[^.]+",
+      "dest": "/index.html"
+    }
+  ]
+}
